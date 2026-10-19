@@ -7,3 +7,4 @@ backups
 node_modules
 **/__pycache__
 test-output
+collectors.local.json

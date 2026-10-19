@@ -35,7 +35,8 @@ def queue(db,pool,rules=None,now=None,cooldown_hours=24,price_drop_pct=3):
     now=now or utcnow()
     count=0
     # Also serialize search deletion and competing scheduler/import jobs.
-    db.execute('BEGIN IMMEDIATE')
+    owns_transaction=not db.in_transaction
+    if owns_transaction: db.execute('BEGIN IMMEDIATE')
     try:
         for search in db.execute('SELECT * FROM searches').fetchall():
             filters=validate_filters(json.loads(search['filters']))
@@ -61,9 +62,9 @@ def queue(db,pool,rules=None,now=None,cooldown_hours=24,price_drop_pct=3):
                     payload=excluded.payload,state='pending',due_at=excluded.due_at,created_at=excluded.created_at,
                     attempts=0,last_error=NULL,lease_until=NULL,lease_token=NULL WHERE outbox.state='cancelled'""",
                     (key,search['id'],group,event,json.dumps(message,ensure_ascii=False),iso(due),iso(now))).rowcount
-        db.execute('COMMIT')
+        if owns_transaction: db.execute('COMMIT')
     except Exception:
-        db.execute('ROLLBACK')
+        if owns_transaction: db.execute('ROLLBACK')
         raise
     return count
 

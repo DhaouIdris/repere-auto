@@ -1,4 +1,4 @@
-"""Only original synthetic data or user-authorized local exports; no scrapers."""
+"""Validation of synthetic data and user-authorized imports and collector output."""
 import csv
 import io
 import json
@@ -70,4 +70,16 @@ def source_registry(mode, db):
     for status in statuses.values():
         status['freshness']='jamais_importe' if not status['last_success'] else ('perime' if date(status['last_success'])<utcnow()-timedelta(days=14) else 'recent')
         status['health']='erreur_import' if status['last_error'] else 'ok'
-    return [{'source':name,'live_status':'blocked_permission','message':'Aucun accès automatisé autorisé configuré ; import de données autorisées uniquement.', 'import':statuses.get(name)} for name in SOURCES[:-1]] + [{'source':'demo' if mode=='demo' else 'export','live_status':'synthetic' if mode=='demo' else 'local_import','message':'Données entièrement synthétiques' if mode=='demo' else 'Fichiers locaux avec provenance déclarée','import':statuses.get('demo' if mode=='demo' else 'export')}]
+    result=[]
+    for name in SOURCES[:-1]:
+        entry={'source':name,'live_status':'blocked_permission','message':'Aucun collecteur configuré ; import de données autorisées uniquement.', 'import':statuses.get(name)}
+        saved=db.execute('SELECT value FROM metadata WHERE key=?',('collector:'+name,)).fetchone() if mode=='import' else None
+        if saved:
+            collector=json.loads(saved[0])
+            collector.pop('task_id',None)
+            at=collector.get('observed_at')
+            collector['freshness']='jamais_importe' if not at else ('perime' if date(at)<utcnow()-timedelta(days=14) else 'recent')
+            entry.update(collector=collector,live_status='collector_error' if collector['status']=='error' else 'external_connected',
+                         message='Résultats de scraper importés via Apify ; collecte et droits configurés auprès du fournisseur.')
+        result.append(entry)
+    return result + [{'source':'demo' if mode=='demo' else 'export','live_status':'synthetic' if mode=='demo' else 'local_import','message':'Données entièrement synthétiques' if mode=='demo' else 'Fichiers locaux avec provenance déclarée','import':statuses.get('demo' if mode=='demo' else 'export')}]

@@ -1,5 +1,7 @@
 # Contrat d'import v1
 
+Le lecteur de résultats Apify passe par ce même contrat après projection des champs véhicule ; voir [COLLECTORS.md](COLLECTORS.md). Il exclut les coordonnées de contact, identifiants personnels, textes libres et images du scraper et exige une base en mode import. Il ne fournit pas les droits de réutilisation des annonces.
+
 Les fichiers `examples/demo.json`, `examples/demo.csv` et `examples/csv-envelope.json` contiennent uniquement des données inventées. Les métadonnées les étiquettent comme `demo`. La génération complète est dans `repere/demo.py` et n'utilise aucune annonce, photo ou identifiant de marketplace.
 
 ## Enveloppe JSON

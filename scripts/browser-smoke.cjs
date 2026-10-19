@@ -37,5 +37,26 @@ async function main(){
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth),'Viewport overflow');
   if(process.env.SCREENSHOT_DIR)await page.screenshot({path:path.join(process.env.SCREENSHOT_DIR,'mobile.png'),fullPage:true});console.log('PASS mobile layout without viewport overflow');
   await page.locator('#logout').click();await page.locator('#login').waitFor({state:'visible'});assert.equal(errors.length,0,errors.join('\n'));console.log('PASS logout and no JavaScript errors');
+  // Reuse the real browser against an import database populated through the
+  // connector. The upstream response remains a fully invented unit fixture.
+  const stopped=new Promise(resolve=>server.once('exit',resolve));server.kill('SIGTERM');await stopped;
+  const imported=path.join(temp,'import.sqlite');
+  const collected=spawnSync(python,['-c',
+    'import sys; from tests.test_collectors import config, StubClient, NOW; from repere.collectors import collect; result=collect(sys.argv[1], [config()], StubClient(), now=NOW); assert result[0]["status"] == "synced"',
+    imported],{cwd:root,encoding:'utf8'});
+  assert.equal(collected.status,0,collected.stderr);
+  server=spawn(python,['-m','gunicorn','--bind',`127.0.0.1:${port}`,'--workers','1','--threads','2','repere.web:create_app()'],{cwd:root,env:{...process.env,DATABASE_PATH:imported,DATA_MODE:'import',APP_ENV:'development',APP_ORIGIN:origin,ACCESS_TOKEN:token,SESSION_SECRET:'import-browser-session-222222222222222222222'},stdio:['ignore','ignore','pipe']});
+  ready=false;
+  for(let i=0;i<100;i++){try{const r=await fetch(origin+'/ready');if(r.ok){ready=true;break;}}catch{}await new Promise(resolve=>setTimeout(resolve,50));}
+  assert(ready,'Import server readiness timeout');
+  await page.context().clearCookies();await page.setViewportSize({width:1440,height:1100});await page.goto(origin);
+  await page.locator('#token').fill(token);await page.locator('#login-form button').click();
+  await page.locator('#kpi-vehicles').filter({hasText:'1'}).waitFor();assert(await page.locator('#demo-banner').isHidden());
+  await page.locator('[data-view=sources]').click();await page.getByText('SCRAPER CONNECTÉ',{exact:true}).waitFor();
+  assert.equal(await page.getByText('LIVE INDISPONIBLE',{exact:true}).count(),3);
+  assert(!(await page.locator('#source-list').innerText()).includes('testuser~cars'));
+  await page.locator('[data-view=search]').click();await page.locator('#result-count').filter({hasText:'1 véhicule'}).waitFor();
+  assert.equal(await page.locator('#search-table tbody tr').count(),1);assert.equal(errors.length,0,errors.join('\n'));
+  console.log('PASS scraper fixture import, private checkpoint, connected source and vehicle explorer');
 }
 main().catch(e=>{console.error(e);process.exitCode=1;}).finally(async()=>{if(browser)await browser.close();if(server){const done=new Promise(r=>server.once('exit',r));server.kill('SIGTERM');await Promise.race([done,new Promise(r=>setTimeout(r,5000))]);}rmSync(temp,{recursive:true,force:true});});

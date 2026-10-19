@@ -9,3 +9,4 @@ data/
 backups/
 node_modules/
 test-output/
+collectors.local.json

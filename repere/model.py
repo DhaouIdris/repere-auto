@@ -227,7 +227,7 @@ def parse_listing(raw, source, mode, now=None):
             cleaned=re.sub(r'[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}|(?<!\w)(?:\+33|0)[1-9](?:[ .-]?\d{2}){4}(?!\d)|\b[A-HJ-NPR-Z0-9]{17}\b|\b[A-Z]{2}-\d{3}-[A-Z]{2}\b','[information retirée]',value)
             if cleaned!=value: flags.append('texte_expurge')
             result[key]=cleaned
-    domains={'leboncoin':{'www.leboncoin.fr','leboncoin.fr'},'lacentrale':{'www.lacentrale.fr','lacentrale.fr'},'autoscout24':{'www.autoscout24.fr'},'paruvendu':{'www.paruvendu.fr'}}
+    domains={'leboncoin':{'www.leboncoin.fr','leboncoin.fr'},'lacentrale':{'www.lacentrale.fr','lacentrale.fr'},'autoscout24':{'www.autoscout24.fr','autoscout24.fr','www.autoscout24.com','autoscout24.com'},'paruvendu':{'www.paruvendu.fr'}}
     result['url']=safe_url(raw.get('url'),domains.get(source))
     if mode=='demo' and result['url']: raise ValueError('La démo ne contient pas de vrais liens')
     result['price_cents']=cents(raw.get('price_eur'))

@@ -84,7 +84,7 @@ class Application:
         if method=='GET' and path=='/health': return 200,{'status':'ok','version':__version__},[]
         with storage.connect(self.config.db_path) as db:
             if method=='GET' and path=='/ready':
-                okay=db.execute('PRAGMA user_version').fetchone()[0]==1 and db.execute("SELECT value FROM metadata WHERE key='mode'").fetchone()[0]==self.config.mode
+                okay=db.execute('PRAGMA user_version').fetchone()[0]==storage.SCHEMA_VERSION and db.execute("SELECT value FROM metadata WHERE key='mode'").fetchone()[0]==self.config.mode
                 return (200 if okay else 503),{'ready':okay},[]
             mutating=method in ('POST','DELETE','PUT','PATCH')
             origin=e.get('HTTP_ORIGIN')
@@ -171,7 +171,7 @@ class Application:
                 return 200,{'alerts':[dict(r)|{'payload':json.loads(r['payload'])} for r in db.execute('SELECT * FROM outbox ORDER BY created_at DESC,id LIMIT 100')]},[]
             if path=='/api/run-alerts' and method=='POST':
                 queued=queue(db,storage.records(db),self.config.rules,now,self.config.cooldown_hours,self.config.price_drop_pct)
-                return 200,{'queued':queued,'delivery':drain(db,now=now)},[]
+                return 200,{'queued':queued,'delivery':drain(db,now=now,rules=self.config.rules)},[]
             if path=='/api/sources' and method=='GET': return 200,{'sources':source_registry(self.config.mode,db)},[]
             if path=='/api/summary' and method=='GET':
                 rows=rank(storage.records(db),{},self.config.rules,now)

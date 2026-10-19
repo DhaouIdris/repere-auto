@@ -20,7 +20,9 @@ Un planificateur hôte peut lancer cette commande toutes les cinq minutes, avec 
 
 Une clé unique couvre recherche + groupe probable + prix. Après une première correspondance, une nouvelle alerte exige une baisse significative (3 % par défaut) et respecte le cooldown de 24 h, tous deux configurables. L'écriture de l'outbox et la revendication du message sont transactionnelles. L'échec d'un message ne marque pas les autres livrés.
 
-La livraison à un service externe n'est pas transactionnelle avec SQLite. Un crash après envoi mais avant confirmation peut entraîner un doublon à la reprise du lease ; Telegram ne fournit pas ici de clé d'idempotence applicative. Le système garantit l'unicité des événements et sérialise les revendications concurrentes, **pas un effet externe exactement une fois dans tous les scénarios de panne**. Vérifier les événements ambigus avant réarmement. La simulation n'est pas une preuve d'envoi Telegram réel.
+La livraison à un service externe n'est pas transactionnelle avec SQLite. Chaque réservation possède un jeton propriétaire et un bail calculé à son début. Un worker ayant perdu sa réservation ne peut pas confirmer ni replanifier le message. Un bail expiré passe en échec ambigu et n'est pas repris automatiquement : Telegram peut déjà avoir livré le message. Vérifier les événements ambigus avant tout réarmement manuel ; ce réarmement peut produire un doublon. Le système ne garantit **pas un effet externe exactement une fois dans tous les scénarios de panne**. La simulation n'est pas une preuve d'envoi Telegram réel.
+
+Les messages en attente sont annulés lorsque leur prix ou leurs critères ne correspondent plus aux données actuelles. La livraison revalide aussi l'éligibilité et actualise l'estimation du message. Une modification des données pendant l'appel externe ne peut pas être atomique avec cet appel. Voir [PHASE1_VALIDATION.md](PHASE1_VALIDATION.md) avant migration d'une base existante.
 
 ## Sauvegarde et restauration
 

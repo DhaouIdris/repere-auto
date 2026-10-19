@@ -19,11 +19,14 @@ jobs:
         shell: bash
         run: |
           IMAGE="ghcr.io/${GITHUB_REPOSITORY,,}:${GITHUB_SHA}"
-          docker build -t "$IMAGE" .
+          docker build --pull -t "$IMAGE" .
           echo "REPERE_RELEASE_IMAGE=$IMAGE" >> "$GITHUB_ENV"
+      - name: Exercise the release image
+        run: python scripts/container_smoke.py "$REPERE_RELEASE_IMAGE"
       - uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
         with:
           image-ref: ${{ env.REPERE_RELEASE_IMAGE }}
+          version: v0.76.0
           severity: HIGH,CRITICAL
           exit-code: '1'
       - name: Publish immutable commit tag

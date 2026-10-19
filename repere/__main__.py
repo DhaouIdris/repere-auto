@@ -60,7 +60,7 @@ def main():
         transport=Telegram() if args.transport=='telegram' else DryRun()
         with connect(args.db) as db:
             n=queue(db,records(db),config.rules,now,config.cooldown_hours,config.price_drop_pct)
-            print(json.dumps({'queued':n,'delivery':drain(db,transport,now)},ensure_ascii=False))
+            print(json.dumps({'queued':n,'delivery':drain(db,transport,rules=config.rules)},ensure_ascii=False))
     if args.command in ('demo','serve'):
         logging.basicConfig(level=logging.INFO,format='%(message)s')
         if args.command=='demo':

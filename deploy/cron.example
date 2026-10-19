@@ -1,0 +1,4 @@
+# Example only: adapt absolute paths, Compose project and .env before installation.
+# No marketplace crawling; process explicitly imported authorized data only.
+*/5 * * * * cd /srv/repere-auto && flock -n /tmp/repere-alerts.lock docker compose exec -T app python -m repere --db /data/repere-import.sqlite --mode import alerts --transport telegram
+0 3 * * * cd /srv/repere-auto && flock -n /tmp/repere-retention.lock docker compose exec -T app python -m repere --db /data/repere-import.sqlite --mode import prune --days 90

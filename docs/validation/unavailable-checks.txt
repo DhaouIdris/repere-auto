@@ -1,0 +1,2 @@
+docker compose version: exit 127, /bin/bash: docker: command not found
+Docker image build, Caddy/TLS, Trivy, GitHub-hosted CI, remote deployment and real Telegram delivery: not executed.

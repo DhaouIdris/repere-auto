@@ -1,0 +1,41 @@
+const assert = require('node:assert/strict');
+const {spawn,spawnSync} = require('node:child_process');
+const {mkdtempSync,rmSync} = require('node:fs');
+const path = require('node:path');
+const os = require('node:os');
+const {chromium:playwright} = require('playwright');
+const chromiumModule = require(process.env.CHROMIUM_PACKAGE || '@sparticuz/chromium');
+const chromium = chromiumModule.default || chromiumModule;
+const root=path.resolve(__dirname,'..'), temp=mkdtempSync(path.join(os.tmpdir(),'repere-browser-'));
+const python=process.env.PYTHON || 'python3', port=process.env.TEST_PORT || '8097', origin=`http://127.0.0.1:${port}`;
+const token='browser-test-token-000000000000000000000';
+let server,browser;
+async function main(){
+  const db=path.join(temp,'demo.sqlite');
+  const seed=spawnSync(python,['-m','repere','--db',db,'seed-demo'],{cwd:root,encoding:'utf8'});assert.equal(seed.status,0,seed.stderr);
+  server=spawn(python,['-m','gunicorn','--bind',`127.0.0.1:${port}`,'--workers','1','--threads','2','repere.web:create_app()'],{cwd:root,env:{...process.env,DATABASE_PATH:db,DATA_MODE:'demo',APP_ENV:'development',APP_ORIGIN:origin,ACCESS_TOKEN:token,SESSION_SECRET:'browser-session-secret-111111111111111111'},stdio:['ignore','ignore','pipe']});
+  let ready=false;
+  for(let i=0;i<100;i++){try{const r=await fetch(origin+'/ready');if(r.ok){ready=true;break;}}catch{}await new Promise(r=>setTimeout(r,50));}
+  assert(ready,'Server readiness timeout');
+  browser=await playwright.launch({headless:true,executablePath:process.env.CHROMIUM_EXECUTABLE || await chromium.executablePath(),args:chromium.args});
+  const page=await browser.newPage({viewport:{width:1440,height:1100}}), errors=[];
+  page.on('pageerror',e=>errors.push(e.message));
+  await page.goto(origin);await page.locator('#token').fill(token);await page.locator('#login-form button').click();
+  await page.locator('#kpi-vehicles').filter({hasText:'94'}).waitFor();
+  assert.equal(await page.locator('#dashboard-table tbody tr').count(),6);console.log('PASS desktop login and six ranked synthetic opportunities');
+  if(process.env.SCREENSHOT_DIR)await page.screenshot({path:path.join(process.env.SCREENSHOT_DIR,'desktop.png'),fullPage:true});
+  await page.locator('#dashboard-table .open-detail').first().click();await page.locator('#detail-content h2').filter({hasText:'Annonces de référence'}).waitFor();
+  assert((await page.locator('#detail-content').innerText()).includes('pas un intervalle'));await page.locator('#close-detail').click();console.log('PASS detail, comparable listings, observed quartiles and price history');
+  await page.locator('[data-view=search]').click();await page.locator('[name=brand]').selectOption('Toyota');await page.locator('#filters button[type=submit]').click();
+  await page.locator('#result-count').filter({hasText:'15 véhicules'}).waitFor();
+  await page.locator('#save-current').click();await page.locator('#search-name').fill('Toyota autour de Paris');await page.locator('#save-form button').click();
+  await page.locator('#saved-list h3').filter({hasText:'Toyota autour de Paris'}).waitFor();console.log('PASS filters and persistent saved search');
+  await page.locator('#simulate').click();await page.locator('#saved-feedback').filter({hasText:'aucun message externe envoyé'}).waitFor();assert.equal(await page.locator('#alert-list .alert-row').count(),1);console.log('PASS locally simulated alert and journal');
+  await page.locator('[data-view=sources]').click();await page.locator('#source-list .info-card').first().waitFor();assert.equal(await page.getByText('LIVE INDISPONIBLE',{exact:true}).count(),4);console.log('PASS four explicitly unavailable live sources');
+  await page.reload();await page.locator('#kpi-vehicles').filter({hasText:'94'}).waitFor();console.log('PASS session survives reload');
+  await page.setViewportSize({width:390,height:844});await page.locator('[data-view=search]').click();await page.locator('#result-count').waitFor();
+  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth),'Viewport overflow');
+  if(process.env.SCREENSHOT_DIR)await page.screenshot({path:path.join(process.env.SCREENSHOT_DIR,'mobile.png'),fullPage:true});console.log('PASS mobile layout without viewport overflow');
+  await page.locator('#logout').click();await page.locator('#login').waitFor({state:'visible'});assert.equal(errors.length,0,errors.join('\n'));console.log('PASS logout and no JavaScript errors');
+}
+main().catch(e=>{console.error(e);process.exitCode=1;}).finally(async()=>{if(browser)await browser.close();if(server){const done=new Promise(r=>server.once('exit',r));server.kill('SIGTERM');await Promise.race([done,new Promise(r=>setTimeout(r,5000))]);}rmSync(temp,{recursive:true,force:true});});

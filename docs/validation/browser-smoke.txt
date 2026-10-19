@@ -1,0 +1,8 @@
+PASS desktop login and six ranked synthetic opportunities
+PASS detail, comparable listings, observed quartiles and price history
+PASS filters and persistent saved search
+PASS locally simulated alert and journal
+PASS four explicitly unavailable live sources
+PASS session survives reload
+PASS mobile layout without viewport overflow
+PASS logout and no JavaScript errors

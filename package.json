@@ -1,0 +1,1 @@
+{"name":"repere-auto-ui-checks","private":true,"version":"0.1.0","scripts":{"test":"node scripts/browser-smoke.cjs"},"devDependencies":{"playwright":"1.62.1","@sparticuz/chromium":"153.0.0"}}

@@ -1,0 +1,1 @@
+Delivered ZIP cold-start PASS: standard-library demo, protected API, 94 groups, six synthetic opportunities.

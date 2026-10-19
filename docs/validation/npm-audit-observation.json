@@ -1,0 +1,14 @@
+{
+  "command": "npm audit --audit-level=high --json",
+  "checked_on": "2026-10-19",
+  "exit_code": 0,
+  "reported_vulnerabilities": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  },
+  "type": "Recorded observation of the actual command output"
+}

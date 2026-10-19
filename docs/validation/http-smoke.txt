@@ -1,0 +1,1 @@
+HTTP smoke PASS: Gunicorn, readiness, authenticated ranking, anonymous denial and static assets

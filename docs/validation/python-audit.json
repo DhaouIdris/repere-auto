@@ -1,0 +1,1 @@
+{"dependencies": [{"name": "gunicorn", "version": "26.2.0", "vulns": []}, {"name": "packaging", "version": "24.2", "vulns": []}], "fixes": []}

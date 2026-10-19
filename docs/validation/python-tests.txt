@@ -1,0 +1,56 @@
+test_concurrent_claims (tests.test_system.AlertTests.test_concurrent_claims) ... ok
+test_queue_and_delivery_idempotent (tests.test_system.AlertTests.test_queue_and_delivery_idempotent) ... ok
+test_retry_and_per_message_status (tests.test_system.AlertTests.test_retry_and_per_message_status) ... ok
+test_auth_and_security_headers (tests.test_system.ApiTests.test_auth_and_security_headers) ... ok
+test_body_size_limit (tests.test_system.ApiTests.test_body_size_limit) ... ok
+test_cross_origin_refused (tests.test_system.ApiTests.test_cross_origin_refused) ... ok
+test_delete_vehicle_group_and_search (tests.test_system.ApiTests.test_delete_vehicle_group_and_search) ... ok
+test_empty_readiness_and_unknown_source (tests.test_system.ApiTests.test_empty_readiness_and_unknown_source) ... ok
+test_end_to_end_ingest_rank_detail_search_alert (tests.test_system.ApiTests.test_end_to_end_ingest_rank_detail_search_alert) ... ok
+test_forged_and_expired_cookie (tests.test_system.ApiTests.test_forged_and_expired_cookie) ... ok
+test_import_validation_is_atomic (tests.test_system.ApiTests.test_import_validation_is_atomic) ... ok
+test_invalid_filters_and_pagination (tests.test_system.ApiTests.test_invalid_filters_and_pagination) ... ok
+test_login_cookie_csrf_and_logout (tests.test_system.ApiTests.test_login_cookie_csrf_and_logout) ... ok
+test_login_rate_limit (tests.test_system.ApiTests.test_login_rate_limit) ... ok
+test_production_config_requires_https_and_distinct_secrets (tests.test_system.ApiTests.test_production_config_requires_https_and_distinct_secrets) ... ok
+test_expired_credentials_not_retried (tests.test_system.FailureTests.test_expired_credentials_not_retried) ... ok
+test_significant_price_drop_and_cooldown (tests.test_system.FailureTests.test_significant_price_drop_and_cooldown) ... ok
+test_aliases_and_no_invented_critair (tests.test_system.ModelTests.test_aliases_and_no_invented_critair) ... ok
+test_csv_parser (tests.test_system.ModelTests.test_csv_parser) ... ok
+test_demo_import_separation (tests.test_system.ModelTests.test_demo_import_separation) ... ok
+test_french_money (tests.test_system.ModelTests.test_french_money) ... ok
+test_future_and_naive_dates_refused (tests.test_system.ModelTests.test_future_and_naive_dates_refused) ... ok
+test_import_requires_rights (tests.test_system.ModelTests.test_import_requires_rights) ... ok
+test_invalid_postal_codes (tests.test_system.ModelTests.test_invalid_postal_codes) ... ok
+test_invalid_prices (tests.test_system.ModelTests.test_invalid_prices) ... ok
+test_json_duplicate_keys_and_constants (tests.test_system.ModelTests.test_json_duplicate_keys_and_constants) ... ok
+test_missing_values_preserved (tests.test_system.ModelTests.test_missing_values_preserved) ... ok
+test_personal_identifiers_forbidden (tests.test_system.ModelTests.test_personal_identifiers_forbidden) ... ok
+test_personal_text_redacted (tests.test_system.ModelTests.test_personal_text_redacted) ... ok
+test_unknown_schema (tests.test_system.ModelTests.test_unknown_schema) ... ok
+test_unsafe_urls_refused (tests.test_system.ModelTests.test_unsafe_urls_refused) ... ok
+test_adapter_rejects_duplicate_ids_before_writing (tests.test_system.PersistenceTests.test_adapter_rejects_duplicate_ids_before_writing) ... ok
+test_backup_restore_integrity (tests.test_system.PersistenceTests.test_backup_restore_integrity) ... ok
+test_capacity_limit_rolls_back (tests.test_system.PersistenceTests.test_capacity_limit_rolls_back) ... ok
+test_idempotent_ingestion_and_history (tests.test_system.PersistenceTests.test_idempotent_ingestion_and_history) ... ok
+test_price_drop_and_older_input (tests.test_system.PersistenceTests.test_price_drop_and_older_input) ... ok
+test_probable_duplicate_conservative (tests.test_system.PersistenceTests.test_probable_duplicate_conservative) ... ok
+test_retention_cascade (tests.test_system.PersistenceTests.test_retention_cascade) ... ok
+test_sparse_holdout_abstains (tests.test_system.TemporalTests.test_sparse_holdout_abstains) ... ok
+test_temporal_disjoint_groups_and_metrics (tests.test_system.TemporalTests.test_temporal_disjoint_groups_and_metrics) ... ok
+test_candidate_and_reposts_excluded (tests.test_system.ValuationTests.test_candidate_and_reposts_excluded) ... ok
+test_damage_financing_stale_are_not_opportunities (tests.test_system.ValuationTests.test_damage_financing_stale_are_not_opportunities) ... ok
+test_demo_has_six_opportunities (tests.test_system.ValuationTests.test_demo_has_six_opportunities) ... ok
+test_dispersion_causes_abstention (tests.test_system.ValuationTests.test_dispersion_causes_abstention) ... ok
+test_four_unique_peers_never_eight (tests.test_system.ValuationTests.test_four_unique_peers_never_eight) ... ok
+test_future_peers_and_sparse_groups (tests.test_system.ValuationTests.test_future_peers_and_sparse_groups) ... ok
+test_geo_and_budget_filters (tests.test_system.ValuationTests.test_geo_and_budget_filters) ... ok
+test_incompatible_engines_sellers_generations (tests.test_system.ValuationTests.test_incompatible_engines_sellers_generations) ... ok
+test_no_double_count_missing_trim (tests.test_system.ValuationTests.test_no_double_count_missing_trim) ... ok
+test_nominal_discount (tests.test_system.ValuationTests.test_nominal_discount) ... ok
+test_sensitivity_range_matches_exhaustive_deletions (tests.test_system.ValuationTests.test_sensitivity_range_matches_exhaustive_deletions) ... ok
+
+----------------------------------------------------------------------
+Ran 51 tests in 2.643s
+
+OK

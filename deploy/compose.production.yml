@@ -1,0 +1,32 @@
+services:
+  app:
+    image: ${REPERE_IMAGE:?Provide an immutable image digest or release tag}
+    env_file: ../.env
+    expose:
+      - "8080"
+    volumes:
+      - production_data:/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    restart: unless-stopped
+  proxy:
+    image: caddy:2.10.2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN:?Provide your domain}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - tls_data:/data
+      - tls_config:/config
+    restart: unless-stopped
+volumes:
+  production_data:
+  tls_data:
+  tls_config:

@@ -1,0 +1,4 @@
+source_id;brand;model;generation;trim;engine;year;month;mileage_km;price_eur;fuel;gearbox;seller;condition;region;city;postal_code;department;published_at;observed_at
+synthetique-0-0;Renault;Clio;V;Evolution;TCe 90;2022;1;40000;10665;essence;manuelle;professionnel;normal;Île-de-France;Paris;75013;75;2026-10-18T12:40:57Z;2026-10-19T12:40:57Z
+synthetique-0-1;Renault;Clio;V;Evolution;TCe 90;2022;2;40670;13122;essence;manuelle;professionnel;normal;Île-de-France;Créteil;94000;94;2026-10-17T12:40:57Z;2026-10-19T11:40:57Z
+synthetique-0-2;Renault;Clio;V;Evolution;TCe 90;2022;3;41340;13311;essence;manuelle;professionnel;normal;Île-de-France;Paris;75013;75;2026-10-16T12:40:57Z;2026-10-19T10:40:57Z

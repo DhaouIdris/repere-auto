@@ -31,7 +31,18 @@ La migration ne peut pas reconstruire la vérité d'un historique déjà contrad
 - Navigateur : les huit groupes de contrôles desktop/mobile réussissent.
 - Base officielle scannée avec Trivy 0.76.0, téléchargé et vérifié par SHA-256 : zéro signalement HIGH/CRITICAL et zéro secret. Ce résultat concerne la base, et ne remplace pas le scan de l'image applicative complète en CI.
 
-Docker et son socket sont absents de l'environnement local. La construction et la recette de l'image complète doivent être confirmées par la CI sur cette branche. Les résultats historiques de `docs/VALIDATION.md` décrivent la livraison initiale ; ils ne sont pas réécrits comme de nouvelles exécutions.
+Docker et son socket sont absents de l'environnement local. Les résultats historiques de `docs/VALIDATION.md` décrivent la livraison initiale ; ils ne sont pas réécrits comme de nouvelles exécutions.
+
+## Vérifications GitHub Actions exécutées
+
+[Exécution 39287258674](https://github.com/DhaouIdris/repere-auto/actions/runs/39287258674), code au commit `a527a0e914f2144843a5dd100f7727947e75db47` : job `test` terminé avec succès, toutes les étapes réussies. Les preuves portent sur ce commit ; cette mise à jour de documentation ne change aucun fichier incorporé dans l'image.
+
+- 68 tests Python réussis et huit groupes de contrôles navigateur réussis.
+- Smoke HTTP Gunicorn, audits Python/Node et construction Docker réussis.
+- Recette du conteneur complet réussie : utilisateur 10001, racine en lecture seule, SQLite et migrations, six opportunités synthétiques, refus de l'accès anonyme.
+- Scan Trivy 0.76.0 de l'image applicative : **zéro signalement HIGH/CRITICAL et zéro secret** dans le périmètre configuré. Il s'agit d'un scan de vulnérabilités connues, sans garantie de sécurité exhaustive.
+- Image scannée : `sha256:5b0171c177586429020823fca4a41ec695f90626779d0300b236527ba08e3adf`, Alpine 3.24.2.
+- Rapport `trivy-image.json` conservé dans l'artefact `image-security-a527a0e914f2144843a5dd100f7727947e75db47` ; archive vérifiée par SHA-256 : `4ace01e08b005e54a0bda8f2fbb38a1c5194500597adffd9745c26d0718efda6`. La rétention GitHub configurée est de 14 jours.
 
 ## Commandes de recette
 

@@ -97,7 +97,20 @@ async function saved() {
 }
 async function sources() {
   busy($('source-list'));const data=await api('/api/sources');$('source-list').replaceChildren();
-  for(const source of data.sources){const card=node('article',null,'info-card');card.append(node('h3',({demo:'Jeu synthétique',leboncoin:'Leboncoin',lacentrale:'La Centrale',autoscout24:'AutoScout24 France',paruvendu:'ParuVendu',export:'Exports autorisés'}[source.source])),node('span',source.live_status==='blocked_permission'?'LIVE INDISPONIBLE':source.live_status==='synthetic'?'DÉMONSTRATION':'IMPORT LOCAL','tag'+(source.live_status==='blocked_permission'?' warn':'')),node('p',source.message),node('p',`Dernier import réussi : ${stamp(source.import?.last_success)} · ${source.import?.imported||0} observations · ${source.import?.freshness==='perime'?'Données périmées':source.import?.freshness==='recent'?'Import récent':'Aucun import'}`));if(source.import?.last_error)card.append(node('p',`Échecs : ${source.import.failures}. ${source.import.last_error}`,'error'));$('source-list').append(card);}
+  for(const source of data.sources){
+    const card=node('article',null,'info-card'), collector=source.collector;
+    const labels={blocked_permission:'LIVE INDISPONIBLE',synthetic:'DÉMONSTRATION',local_import:'IMPORT LOCAL',external_connected:'SCRAPER CONNECTÉ',collector_error:'ERREUR COLLECTEUR'};
+    card.append(node('h3',({demo:'Jeu synthétique',leboncoin:'Leboncoin',lacentrale:'La Centrale',autoscout24:'AutoScout24 France',paruvendu:'ParuVendu',export:'Exports autorisés'}[source.source])),node('span',labels[source.live_status]||'NON CONFIGURÉ','tag'+(['blocked_permission','collector_error'].includes(source.live_status)?' warn':'')),node('p',source.message));
+    if(collector){
+      card.append(node('p',`Dernière synchronisation réussie : ${stamp(collector.last_success)} · Observation du résultat : ${stamp(collector.observed_at)}`));
+      card.append(node('p',collector.freshness==='perime'?'Résultat ancien : ne représente pas le marché actuel.':collector.status==='unchanged'?'Résultat déjà importé ; attente de la prochaine collecte.':`${collector.rows??0} annonce(s) dans le dernier résultat.`));
+      if(collector.error)card.append(node('p',collector.error,'error'));
+    }else{
+      card.append(node('p',`Dernier import réussi : ${stamp(source.import?.last_success)} · ${source.import?.imported||0} observations · ${source.import?.freshness==='perime'?'Données périmées':source.import?.freshness==='recent'?'Import récent':'Aucun import'}`));
+      if(source.import?.last_error)card.append(node('p',`Échecs : ${source.import.failures}. ${source.import.last_error}`,'error'));
+    }
+    $('source-list').append(card);
+  }
   $('import-help').textContent=mode==='demo'?'Base synthétique uniquement. Les imports réels nécessitent un lancement séparé en mode import.':'Base de données réelles autorisées. Aucune donnée synthétique ne sera acceptée.';
 }
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>view(b.dataset.view)));
@@ -115,3 +128,12 @@ $('login-form').addEventListener('submit',async e=>{e.preventDefault();try{const
 $('logout').addEventListener('click',async()=>{try{await api('/api/logout',{method:'POST'});csrf='';login();}catch(e){error(e.message);}});
 async function initialize(){try{const session=await api('/api/session');mode=session.mode;if(!session.authenticated){login();return;}csrf=session.csrf;$('login').hidden=true;$('app').hidden=false;$('demo-banner').hidden=mode!=='demo';$('mode-badge').textContent=mode==='demo'?'DÉMO SYNTHÉTIQUE':'IMPORTS AUTORISÉS';await view('dashboard');}catch(e){login();$('login-error').textContent=e.message;}}
 initialize();
+// Refresh collector status and dashboard without replacing a form being edited.
+let refreshing=false;
+setInterval(async()=>{
+  if(refreshing||document.hidden||$('app').hidden||mode==='demo')return;
+  const active=document.querySelector('nav [data-view].active')?.dataset.view;
+  if(!['dashboard','sources'].includes(active))return;
+  refreshing=true;
+  try{if(active==='sources')await sources();else await dashboard();}catch(e){error(e.message);}finally{refreshing=false;}
+},30000);

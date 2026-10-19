@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "sources": [
+    {
+      "source": "leboncoin",
+      "enabled": false,
+      "task_id": "",
+      "authorized": false,
+      "rights_reference": "",
+      "max_items": 100
+    },
+    {
+      "source": "lacentrale",
+      "enabled": false,
+      "task_id": "",
+      "authorized": false,
+      "rights_reference": "",
+      "max_items": 100
+    },
+    {
+      "source": "autoscout24",
+      "enabled": false,
+      "task_id": "",
+      "authorized": false,
+      "rights_reference": "",
+      "max_items": 100
+    },
+    {
+      "source": "paruvendu",
+      "enabled": false,
+      "task_id": "",
+      "authorized": false,
+      "rights_reference": "",
+      "max_items": 100
+    }
+  ]
+}

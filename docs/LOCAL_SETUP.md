@@ -36,6 +36,8 @@ En PowerShell, la syntaxe correspondante est `$env:ACCESS_TOKEN='…'`, et de m�
 
 ## Imports
 
+Pour raccorder les résultats d'un scraper externe et lancer le serveur local sur des annonces réelles : suivre [COLLECTORS.md](COLLECTORS.md). `python -m repere live --config collectors.local.json` choisit une base import distincte et génère ses secrets temporaires, comme la démo. Une tâche Apify, son accès et les droits nécessaires doivent être configurés préalablement.
+
 Une enveloppe JSON contient `schema_version: 1`, `source`, `authorized: true`, `rights_reference` et `listings`. Le prix source est `price_eur` ; le stockage utilise des centimes. Les données CSV utilisent `format: csv`, une chaîne `csv` UTF-8 avec séparateur `;`, et les mêmes métadonnées. Un champ vide reste absent. La validation est atomique : une ligne invalide rejette le lot complet.
 
 Le formulaire web accepte l'un ou l'autre format et les fichiers de 1 Mio maximum, dans la limite de 500 annonces par lot. Une base démo accepte uniquement la source `demo`. Pour les données réelles autorisées, créer une base `--mode import`, puis configurer le serveur sur cette même base avec `DATA_MODE=import`. Les exemples livrés sont fictifs et ne doivent pas être étiquetés comme des annonces réelles.

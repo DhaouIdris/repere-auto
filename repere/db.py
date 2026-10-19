@@ -102,7 +102,8 @@ def records(db):
 
 def ingest(db, items, rights, now):
     counts={'inserted':0,'updated':0,'price_changes':0,'ignored_older':0,'ignored_identical':0,'probable_duplicates':0}
-    db.execute('BEGIN IMMEDIATE')
+    owns_transaction=not db.in_transaction
+    if owns_transaction: db.execute('BEGIN IMMEDIATE')
     try:
         total=db.execute('SELECT count(*) FROM listings').fetchone()[0]
         added=sum(db.execute('SELECT 1 FROM listings WHERE id=?',(x.id,)).fetchone() is None for x in items)
@@ -136,9 +137,9 @@ def ingest(db, items, rights, now):
             if item.price_cents is not None and (not old or changed):
                 db.execute('INSERT INTO price_history(listing_id,observed_at,price_cents) VALUES(?,?,?)',(item.id,item.observed_at,item.price_cents))
             db.execute('INSERT INTO source_status(source,last_attempt,last_success,imported) VALUES(?,?,?,1) ON CONFLICT(source) DO UPDATE SET last_attempt=excluded.last_attempt,last_success=excluded.last_success,imported=source_status.imported+1,last_error=NULL',(item.source,iso(now),iso(now)))
-        db.execute('COMMIT')
+        if owns_transaction: db.execute('COMMIT')
     except Exception:
-        db.execute('ROLLBACK')
+        if owns_transaction: db.execute('ROLLBACK')
         raise
     return counts
 

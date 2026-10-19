@@ -1,5 +1,7 @@
 # Validation effectivement réalisée
 
+Ce document conserve les résultats de la livraison initiale. Les correctifs et nouvelles vérifications de la phase 1 sont décrits dans [PHASE1_VALIDATION.md](PHASE1_VALIDATION.md).
+
 Date : **19 octobre 2026**. Application originale Repère Auto 0.1.0. Python 3.12.14, Node 24.19.0, Gunicorn 26.2.0. Playwright 1.62.1 pilotant un Chromium de test 153.0.0 sur Linux.
 
 ## Résultats finaux

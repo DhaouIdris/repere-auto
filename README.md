@@ -46,6 +46,7 @@ Les exemples du dossier `examples/` restent **synthétiques**, avec `source: dem
 
 ## Documentation
 
+- [PHASE1_VALIDATION.md](docs/PHASE1_VALIDATION.md) — correctifs de fiabilité, migration v2 et nouvelles preuves de validation.
 - [LOCAL_SETUP.md](docs/LOCAL_SETUP.md) — lancement, import, tests et variables.
 - [ARCHITECTURE_AUDIT.md](docs/ARCHITECTURE_AUDIT.md) — décisions et architecture originale.
 - [MIGRATION_PLAN.md](docs/MIGRATION_PLAN.md) — correspondance avec le cahier des charges et suites à donner.

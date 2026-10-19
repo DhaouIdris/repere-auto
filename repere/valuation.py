@@ -157,7 +157,7 @@ def match(row,f):
     return True
 
 
-def rank(pool,filters=None,rules=None,now=None):
+def rank(pool,filters=None,rules=None,now=None,*,group_id=None):
     filters=validate_filters(filters or {})
     groups={}
     counts=Counter(p['group_id'] for p in pool)
@@ -168,6 +168,7 @@ def rank(pool,filters=None,rules=None,now=None):
         if key not in groups or (row['observed_at'],row['id'])>(groups[key]['observed_at'],groups[key]['id']): groups[key]=row
     out=[]
     for row in groups.values():
+        if group_id is not None and row['group_id']!=group_id: continue
         # Cheap characteristics filters before valuation; full pool remains the reference.
         if any(norm(str(row.get(k) or ''))!=norm(str(filters[k])) for k in FILTER_TEXT if k in filters): continue
         item=dict(row)

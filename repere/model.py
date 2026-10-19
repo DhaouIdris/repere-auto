@@ -243,5 +243,7 @@ def fingerprint(listing):
     keys=['brand','model','generation','trim','engine','fuel','gearbox','seller','year','month','mileage_km','postal_code']
     if len(norm(d['description'])) < 30 or any(d[k] is None for k in keys):
         return listing.id, 'identite_source'
-    parts=[str(d[k]) for k in keys]+[norm(d['description'])]
-    return hashlib.sha256('|'.join(parts).encode()).hexdigest()[:24], 'doublon_probable'
+    # Use the same text normalization as valuation. Price and observation date
+    # are deliberately absent: a price change does not create another vehicle.
+    parts=[norm(str(d[k])) for k in keys]+[norm(d['description'])]
+    return hashlib.sha256('|'.join(parts).encode()).hexdigest()[:24], 'doublon_probable_normalise'

@@ -399,7 +399,14 @@ class FailureTests(Base):
             pool=db.records(conn)
             # Change all views of the selected probable vehicle; one event only.
             group=next(r['group_id'] for r in pool if r['source_id']=='synthetique-0-0')
-            pool=[r|{'price_cents':800000} if r['group_id']==group else r for r in pool]
+            # Persist the new observation: delivery now revalidates the database,
+            # so a modified in-memory ranking is no longer a delivery fixture.
+            for row in pool:
+                if row['group_id']==group:
+                    data=json.loads(conn.execute('SELECT payload FROM listings WHERE id=?',(row['id'],)).fetchone()[0])
+                    data.update(price_cents=800000,observed_at=iso(NOW+timedelta(minutes=1)))
+                    conn.execute('UPDATE listings SET price_cents=?,payload=? WHERE id=?',(800000,json.dumps(data),row['id']))
+            pool=db.records(conn)
             self.assertEqual(queue(conn,pool,now=NOW+timedelta(minutes=1)),1)
             self.assertEqual(drain(conn,FakeTransport(),NOW+timedelta(minutes=2))['sent'],0)
             self.assertEqual(drain(conn,FakeTransport(),NOW+timedelta(hours=25))['sent'],1)
